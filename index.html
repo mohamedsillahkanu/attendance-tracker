@@ -2,1437 +2,744 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICF-SL | Configure Attendance Module</title>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Attendance Tracker — SBD 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
+        :root {
+            --navy: #0056a8; --navy-mid: #003d7a; --navy-light: #0068cc; --navy-deep: #002952;
+            --gold: #ffc107; --gold-light: #ffdd57; --gold-pale: #fff8e1; --gold-dark: #e6a800;
+            --green: #28a745; --green-dark: #1e7e34; --green-bg: #e8f5e9;
+            --red: #dc3545; --red-dark: #c62828; --red-bg: #fef2f2;
+            --orange: #f59e0b; --orange-bg: #fffbeb;
+            --teal: #0d9488; --teal-dark: #0f766e;
+            --bg: #f0f4f8; --card: #ffffff;
+            --text: #0f172a; --text-mid: #475569; --text-light: #94a3b8; --border: #dfe3e8;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: #ffffff;
-            font-family: 'Oswald', Arial, sans-serif;
-            color: #000000;
-            font-weight: 500;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .page-container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .page-header {
-            background-color: #004080;
-            color: #ffffff;
-            padding: 25px 30px;
-            text-align: center;
-            margin-bottom: 10px;
-            border-radius: 8px 8px 0 0;
-        }
-
-        .logo-box {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 10px;
-            display: inline-block;
-            margin-bottom: 15px;
-        }
-
-        .logo-box img {
-            width: 100px;
-            height: auto;
-            border-radius: 6px;
-        }
-
-        .page-header h3 {
-            margin: 12px 0 5px;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .page-header h1 {
-            margin: 15px 0 10px;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .page-header .subtitle {
-            font-size: 13px;
-            font-weight: 500;
-            opacity: 0.9;
-        }
-
-        /* Navigation */
-        .section-nav {
-            background: #ffffff;
-            border: 2px solid #004080;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-        }
-
-        .section-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        .section-tab {
-            padding: 8px 14px;
-            border: 2px solid #004080;
-            border-radius: 20px;
-            background: #f8f9fa;
-            color: #004080;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .section-tab:hover { background: #e7f3ff; }
-        .section-tab.active { background: #004080; color: #ffffff; }
-
-        .progress-bar {
-            background: #f8f9fa;
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            border: 2px solid #004080;
-        }
-
-        .progress-fill {
-            background: linear-gradient(90deg, #004080, #0056b3);
-            height: 100%;
-            transition: width 0.5s ease;
-        }
-
-        .progress-text {
-            text-align: center;
-            color: #000;
-            font-size: 13px;
-            font-weight: 700;
-            margin-top: 10px;
-        }
-
-        /* Content */
-        .content-card {
-            border: 4px double #004080;
-            border-radius: 12px;
-            padding: 25px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-bottom: 10px;
-        }
-
-        .section-title-bar {
-            background-color: #004080;
-            color: #ffffff;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .section-number {
-            background: #ffffff;
-            color: #004080;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .section-content {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .section-content.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Info Boxes */
-        .info-box {
-            background: #f8f9fa;
-            border: 2px solid #004080;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .info-box.warning { background: #fff8e6; border-color: #ff6b35; }
-        .info-box.success { background: #e6f7ed; border-color: #28a745; }
-        .info-box.danger { background: #ffe6e6; border-color: #dc3545; }
-
-        .info-box-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #004080;
-        }
-
-        .info-box.warning .info-box-title { color: #ff6b35; }
-        .info-box.success .info-box-title { color: #28a745; }
-        .info-box.danger .info-box-title { color: #dc3545; }
-
-        .info-box p, .info-box li {
-            font-size: 13px;
-            line-height: 1.8;
-            color: #333;
-        }
-
-        /* Tables */
-        .table-container {
-            overflow-x: auto;
-            margin: 20px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        th {
-            background: #004080;
-            color: #ffffff;
-            padding: 12px 15px;
-            text-align: left;
-            font-weight: 700;
-            font-size: 12px;
-        }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-            font-weight: 500;
-        }
-
-        tr:nth-child(even) { background: #f8f9fa; }
-        tr:hover { background: #e7f3ff; }
-
-        /* Change indicator rows */
-        tr.must-change {
-            background: #fff0e6 !important;
-            border-left: 4px solid #ff6b35;
-        }
-
-        tr.no-change {
-            background: #e6f7ed !important;
-            border-left: 4px solid #28a745;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .badge-change { background: #ff6b35; color: #fff; }
-        .badge-no-change { background: #28a745; color: #fff; }
-
-        /* Code Blocks */
-        .code-block-header {
-            background: #004080;
-            color: #ffffff;
-            padding: 8px 15px;
-            border-radius: 6px 6px 0 0;
-            font-size: 12px;
-            font-weight: 700;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 15px 0 0 0;
-        }
-
-        .code-block-content {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 20px;
-            border-radius: 0 0 8px 8px;
-            overflow-x: auto;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 12px;
-            line-height: 1.6;
-            border: 2px solid #004080;
-            border-top: none;
-            white-space: pre-wrap;
-        }
-
-        .copy-btn {
-            background: #ff6b35;
-            color: #ffffff;
-            border: none;
-            padding: 5px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Oswald', sans-serif;
-            font-weight: 700;
-            font-size: 11px;
-        }
-
-        .copy-btn:hover { background: #e55a2b; }
-        .copy-btn.copied { background: #28a745; }
-
-        .download-btn {
-            background: #28a745;
-            color: #ffffff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Oswald', sans-serif;
-            font-weight: 700;
-            font-size: 12px;
-            text-decoration: none;
-            display: inline-block;
-            margin: 10px 0;
-        }
-
-        .download-btn:hover { background: #218838; }
-
-        code {
-            background: #e8e8e8;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 12px;
-            color: #004080;
-            font-weight: 600;
-        }
-
-        /* Highlight for changes */
-        .hl-change {
-            background: #ff6b35;
-            color: #fff;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: 700;
-        }
-
-        .hl-no-change {
-            background: #28a745;
-            color: #fff;
-            padding: 2px 6px;
-            border-radius: 3px;
-        }
-
-        /* Subsection */
-        .subsection {
-            margin: 25px 0;
-            padding: 20px;
-            background: #fafafa;
-            border-radius: 8px;
-            border-left: 4px solid #004080;
-        }
-
-        .subsection h3 {
-            color: #004080;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-
-        .subsection p {
-            font-size: 13px;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        /* URL Box */
-        .url-box {
-            background: #1e1e1e;
-            color: #4ec9b0;
-            padding: 15px 20px;
-            border-radius: 8px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 13px;
-            margin: 10px 0;
-            word-break: break-all;
-        }
-
-        .url-box a { color: #4ec9b0; text-decoration: none; }
-        .url-box a:hover { text-decoration: underline; }
-
-        /* Excel Formula Box */
-        .excel-formula {
-            background: #217346;
-            color: #ffffff;
-            padding: 15px 20px;
-            border-radius: 8px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 14px;
-            margin: 10px 0;
-        }
-
-        /* Process Flow */
-        .process-flow {
-            display: flex;
-            justify-content: center;
-            align-items: stretch;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin: 20px 0;
-            padding: 25px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .process-step {
-            background: #004080;
-            color: #fff;
-            padding: 25px 30px;
-            border-radius: 8px;
-            text-align: center;
-            min-width: 180px;
-            flex: 1;
-            max-width: 250px;
-        }
-
-        .process-step .step-num {
-            background: #ffffff;
-            color: #004080;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0 auto 15px auto;
-        }
-
-        .process-step p {
-            font-size: 13px;
-            font-weight: 700;
-            line-height: 1.4;
-        }
-
-        /* Steps Container */
-        .steps-container {
-            margin: 20px 0;
-        }
-
-        .step-item {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #004080;
-        }
-
-        .step-item .step-number {
-            background: #004080;
-            color: #ffffff;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-
-        .step-content {
-            flex: 1;
-        }
-
-        .step-content h4 {
-            color: #004080;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        .step-content p {
-            font-size: 13px;
-            color: #333;
-        }
-
-        /* Navigation Buttons */
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #e0e0e0;
-        }
-
-        .nav-btn {
-            background: #004080;
-            color: #ffffff;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-family: 'Oswald', sans-serif;
-            font-weight: 700;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-
-        .nav-btn:hover { background: #0056b3; }
-        .nav-btn:disabled { background: #ccc; cursor: not-allowed; }
-
-        .nav-btn.secondary {
-            background: #ffffff;
-            color: #004080;
-            border: 2px solid #004080;
-        }
-
-        .nav-btn.secondary:hover { background: #e7f3ff; }
-
-        /* Folder Structure */
-        .folder-structure {
-            background: #1e1e1e;
-            color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 13px;
-            line-height: 1.8;
-            border: 2px solid #004080;
-        }
-
-        .folder { color: #4ec9b0; }
-        .file { color: #dcdcaa; }
-
-        /* Footer */
-        .page-footer {
-            background: #004080;
-            color: #ffffff;
-            padding: 20px;
-            text-align: center;
-            border-radius: 0 0 8px 8px;
-            margin-top: 10px;
-        }
-
-        .page-footer p { font-size: 12px; margin: 5px 0; }
-
-        /* Legend */
-        .legend {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin: 15px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-        }
-
-        .legend-color.change { background: #ff6b35; }
-        .legend-color.no-change { background: #28a745; }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .section-tabs { gap: 5px; }
-            .section-tab { padding: 6px 10px; font-size: 10px; }
-            .process-flow { flex-direction: column; gap: 15px; }
-            .process-step { max-width: 100%; }
-        }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+        /* HEADER */
+        .top-bar { background: var(--navy); padding: 14px 20px; position: sticky; top: 0; z-index: 200; box-shadow: 0 4px 20px rgba(0,0,0,0.25); }
+        .top-bar-inner { max-width: 540px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-badge { width: 40px; height: 40px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .brand-badge svg { width: 22px; height: 22px; stroke: var(--navy); fill: none; stroke-width: 2.5; }
+        .brand-text h1 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--gold); letter-spacing: 3px; line-height: 1; }
+        .brand-text p { font-size: 9px; color: rgba(255,255,255,0.5); letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
+        .status-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px rgba(16,185,129,0.6); animation: pulse-dot 2s infinite; }
+        @keyframes pulse-dot { 0%,100%{box-shadow:0 0 8px rgba(16,185,129,0.6);}50%{box-shadow:0 0 16px rgba(16,185,129,0.9);} }
+
+        /* TABS */
+        .tabs-container { max-width: 540px; margin: 0 auto; padding: 20px 16px 0; }
+        .tab-bar { display: flex; background: var(--navy); border-radius: 14px; padding: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+        .tab-btn { flex: 1; padding: 14px 6px; border: none; background: transparent; font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 2px; color: rgba(255,255,255,0.4); cursor: pointer; border-radius: 11px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .tab-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+        .tab-btn.signin.active  { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); }
+        .tab-btn.signout.active { background: linear-gradient(135deg, var(--green), #34d399); color: #fff; }
+        .tab-btn.stats.active   { background: linear-gradient(135deg, var(--teal), #2dd4bf); color: #fff; }
+
+        /* MAIN */
+        .main { max-width: 540px; margin: 0 auto; padding: 16px 16px 40px; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: fadeUp 0.3s ease; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);} }
+
+        /* SCANNER CARD */
+        .scanner-card { background: var(--card); border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 16px; }
+        .scanner-header { padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
+        .scanner-header.gold { background: linear-gradient(135deg, var(--gold-pale), #fef3c7); border-bottom: 2px solid var(--gold); }
+        .scanner-header.green-hd { background: var(--green-bg); border-bottom: 2px solid var(--green); }
+        .scanner-header svg { width: 22px; height: 22px; flex-shrink: 0; }
+        .scanner-header.gold svg { stroke: var(--gold-dark); }
+        .scanner-header.green-hd svg { stroke: var(--green-dark); }
+        .scanner-title { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 2px; }
+        .scanner-header.gold .scanner-title { color: var(--gold-dark); }
+        .scanner-header.green-hd .scanner-title { color: var(--green-dark); }
+        .scanner-body { padding: 20px; }
+        #reader-signin, #reader-signout { width: 100%; }
+        #reader-signin img, #reader-signout img { display: none !important; }
+        #reader-signin, #reader-signout { border: none !important; }
+        .scan-overlay { text-align: center; padding: 30px 20px; }
+        .scan-overlay svg { width: 64px; height: 64px; margin-bottom: 12px; }
+        .scan-overlay p { font-size: 14px; color: var(--text-mid); font-weight: 500; }
+        .scan-btn { margin-top: 16px; padding: 14px 32px; border: none; border-radius: 12px; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .scan-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
+        .scan-btn.gold-btn { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--navy); box-shadow: 0 4px 16px rgba(212,160,23,0.3); }
+        .scan-btn.green-btn { background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #fff; box-shadow: 0 4px 16px rgba(16,185,129,0.3); }
+        .scan-btn.stop-btn { background: var(--red); color: #fff; }
+        .scan-btn:hover { transform: translateY(-2px); }
+
+        /* USER CARD */
+        .device-card { background: var(--card); border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 16px; display: none; }
+        .device-card.show { display: block; animation: fadeUp 0.35s ease; }
+        .device-card-top { padding: 20px; text-align: center; position: relative; }
+        .device-card-top.gold-top   { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); }
+        .device-card-top.green-top  { background: linear-gradient(135deg, #065f46, var(--green-dark)); }
+        .device-card-top.red-top    { background: linear-gradient(135deg, #991b1b, var(--red-dark)); }
+        .device-card-top.orange-top { background: linear-gradient(135deg, #92400e, #b45309); }
+        .device-card-top::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:16px; background:var(--card); border-radius:16px 16px 0 0; }
+        .device-status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; margin-bottom: 10px; }
+        .badge-register { background: rgba(212,160,23,0.2); color: var(--gold-light); }
+        .badge-returned { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+        .badge-error    { background: rgba(239,68,68,0.2); color: #fca5a5; }
+        .badge-warning  { background: rgba(245,158,11,0.2); color: #fcd34d; }
+        .device-status-badge svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+        .device-person { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #fff; letter-spacing: 2px; line-height: 1.1; }
+        .device-phone  { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 4px; font-weight: 500; }
+        .device-code-display { margin-top: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 5px; }
+        .gold-top .device-code-display   { color: var(--gold); }
+        .green-top .device-code-display  { color: #6ee7b7; }
+        .red-top .device-code-display    { color: #fca5a5; }
+        .orange-top .device-code-display { color: #fcd34d; }
+        .device-body { padding: 6px 20px 20px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+        .info-cell { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+        .info-cell.full { grid-column: span 2; }
+        .info-key { font-size: 9px; font-weight: 700; letter-spacing: 1.2px; color: var(--text-light); text-transform: uppercase; margin-bottom: 2px; }
+        .info-val { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+        /* ACTION BUTTONS */
+        .action-btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .action-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; }
+        .action-btn.register-action { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--navy); box-shadow: 0 6px 24px rgba(212,160,23,0.3); }
+        .action-btn.return-action   { background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #fff; box-shadow: 0 6px 24px rgba(16,185,129,0.3); }
+        .action-btn:hover { transform: translateY(-2px); }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .action-btn .spinner-sm { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: currentColor; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* MSG CARD */
+        .msg-card { background: var(--card); border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 16px; display: none; text-align: center; padding: 30px 20px; }
+        .msg-card.show { display: block; animation: fadeUp 0.35s ease; }
+        .msg-card svg { width: 56px; height: 56px; margin-bottom: 14px; }
+        .msg-card.success-msg svg { stroke: var(--green); }
+        .msg-card.error-msg   svg { stroke: var(--red); }
+        .msg-card.warning-msg svg { stroke: var(--orange); }
+        .msg-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; margin-bottom: 6px; }
+        .success-msg .msg-title { color: var(--green-dark); }
+        .error-msg   .msg-title { color: var(--red-dark); }
+        .warning-msg .msg-title { color: #b45309; }
+        .msg-text   { font-size: 14px; color: var(--text-mid); font-weight: 500; line-height: 1.5; }
+        .msg-detail { margin-top: 10px; font-size: 12px; color: var(--text-light); }
+        .scan-again-btn { margin-top: 20px; padding: 12px 28px; background: var(--navy); color: #fff; border: none; border-radius: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 2px; cursor: pointer; }
+        .scan-again-btn:hover { background: var(--navy-mid); }
+
+        /* HISTORY */
+        .history-card { background: var(--card); border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); overflow: hidden; }
+        .history-header { padding: 14px 20px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .history-title { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; color: var(--text-mid); }
+        .history-count { font-size: 11px; background: var(--navy); color: var(--gold); padding: 3px 10px; border-radius: 10px; font-weight: 700; }
+        .history-list { max-height: 260px; overflow-y: auto; }
+        .history-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #f1f5f9; }
+        .history-item:last-child { border-bottom: none; }
+        .history-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .history-dot.signin  { background: var(--gold); box-shadow: 0 0 6px rgba(212,160,23,0.4); }
+        .history-dot.signout { background: var(--green); box-shadow: 0 0 6px rgba(16,185,129,0.4); }
+        .history-info { flex: 1; min-width: 0; }
+        .history-name { font-weight: 600; font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .history-meta { font-size: 10px; color: var(--text-light); margin-top: 1px; }
+        .history-code { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1px; color: var(--navy); }
+        .history-empty { padding: 30px; text-align: center; font-size: 13px; color: var(--text-light); }
+
+        /* STATS */
+        .stats-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .stat-box { background: var(--card); border-radius: 14px; padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); text-align: center; position: relative; overflow: hidden; }
+        .stat-box::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; }
+        .stat-box.navy::before   { background: linear-gradient(90deg, var(--navy), var(--navy-light)); }
+        .stat-box.gold-s::before { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+        .stat-box.green-s::before{ background: linear-gradient(90deg, var(--green), #34d399); }
+        .stat-box.red-s::before  { background: linear-gradient(90deg, var(--red), #f87171); }
+        .stat-box.teal-s::before { background: linear-gradient(90deg, var(--teal), #2dd4bf); }
+        .stat-box.full { grid-column: span 2; }
+        .stat-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-light); text-transform: uppercase; margin-bottom: 6px; }
+        .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 2px; line-height: 1; }
+        .stat-box.navy .stat-value   { color: var(--navy); }
+        .stat-box.gold-s .stat-value { color: var(--gold-dark); }
+        .stat-box.green-s .stat-value{ color: var(--green-dark); }
+        .stat-box.red-s .stat-value  { color: var(--red-dark); }
+        .stat-box.teal-s .stat-value { color: var(--teal-dark); }
+        .stat-sub { font-size: 10px; color: var(--text-light); margin-top: 2px; font-weight: 600; }
+
+        /* USERS TABLE */
+        .users-card { background: var(--card); border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 16px; }
+        .users-header { padding: 14px 20px; background: linear-gradient(135deg, var(--navy-deep), var(--navy-mid)); display: flex; align-items: center; justify-content: space-between; }
+        .users-header-title { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 2px; color: var(--gold); }
+        .users-header-badge { font-size: 10px; background: rgba(255,193,7,0.2); color: var(--gold-light); padding: 4px 12px; border-radius: 10px; font-weight: 700; letter-spacing: 1px; }
+        .users-search { padding: 12px 20px; border-bottom: 1px solid var(--border); }
+        .users-search input { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text); outline: none; background: #f8fafc; }
+        .users-search input:focus { border-color: var(--gold); background: #fff; }
+        .users-list { max-height: 400px; overflow-y: auto; }
+        .user-item { padding: 14px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 14px; }
+        .user-item:last-child { border-bottom: none; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: #fff; flex-shrink: 0; }
+        .user-info { flex: 1; min-width: 0; }
+        .user-name { font-weight: 600; font-size: 14px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-meta { font-size: 11px; color: var(--text-light); margin-top: 2px; display: flex; gap: 10px; }
+        .user-days { text-align: right; font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--navy); letter-spacing: 1px; }
+        .user-days-lbl { font-size: 9px; font-weight: 700; color: var(--text-light); letter-spacing: 1px; }
+
+        /* NOTIF */
+        .notif { position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-100px); padding: 12px 24px; border-radius: 12px; font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 1px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); z-index: 9999; transition: transform 0.3s; white-space: nowrap; }
+        .notif.show { transform: translateX(-50%) translateY(0); }
+        .notif.success { background: var(--green); color: #fff; }
+        .notif.error   { background: var(--red); color: #fff; }
+        .notif.info    { background: var(--navy); color: var(--gold); }
     </style>
 </head>
 <body>
-    <div class="page-container">
-        <!-- Header -->
-        <header class="page-header">
-            <div class="logo-box">
-                <img src="https://github.com/mohamedsillahkanu/gdp-dashboard-2/raw/6c7463b0d5c3be150aafae695a4bcbbd8aeb1499/ICF-SL.jpg" alt="ICF-SL Logo">
+
+<div id="main-app">
+<div class="top-bar">
+    <div class="top-bar-inner">
+        <div class="brand">
+            <div class="brand-badge">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
             </div>
-            <h3>INFORMATICS CONSULTANCY FIRM - SIERRA LEONE</h3>
-            <h1>CONFIGURE ATTENDANCE MODULE</h1>
-            <p class="subtitle">Health Campaign Management | Based on eGov Academy Documentation</p>
-        </header>
-
-        <!-- Navigation -->
-        <nav class="section-nav">
-            <div class="section-tabs">
-                <button class="section-tab active" onclick="goToSection(1)">TOPIC 1: CONTEXT</button>
-                <button class="section-tab" onclick="goToSection(2)">TOPIC 2: OVERVIEW</button>
-                <button class="section-tab" onclick="goToSection(3)">STEP 1: CREATE CSV</button>
-                <button class="section-tab" onclick="goToSection(4)">STEP 2: PRE-CHECKS</button>
-                <button class="section-tab" onclick="goToSection(5)">STEP 3: RUN SCRIPT</button>
-                <button class="section-tab" onclick="goToSection(6)">RESPONSE</button>
+            <div class="brand-text">
+                <h1>ATTENDANCE</h1>
+                <p>SBD 2026 · ICF-SL</p>
             </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 16.66%"></div>
+        </div>
+<div class="status-dot"></div>
+    </div>
+</div>
+
+<div class="tabs-container">
+    <div class="tab-bar">
+        <button class="tab-btn signin active" onclick="switchTab('signin')">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            ATTENDANCE
+        </button>
+        <button class="tab-btn stats" onclick="switchTab('stats')">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            STATS
+        </button>
+    </div>
+</div>
+
+<div class="main">
+
+    <!-- ATTENDANCE PANEL -->
+    <div class="tab-panel active" id="panel-signin">
+
+        <!-- SCANNER -->
+        <div class="scanner-card" id="scan-section">
+            <div class="scanner-header gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4"/></svg>
+                <span class="scanner-title">SCAN SBD ID CARD</span>
             </div>
-            <p class="progress-text" id="progressText">Section 1 of 6 | TOPIC 1: CONTEXT</p>
-        </nav>
-
-        <!-- Main Content -->
-        <main class="content-card">
-
-            <!-- ==================== SECTION 1: CONTEXT ==================== -->
-            <section id="section1" class="section-content active">
-                <div class="section-title-bar">
-                    <div class="section-number">1</div>
-                    <div class="section-title">TOPIC 1: CONTEXT</div>
-                </div>
-
-                <div class="info-box">
-                    <div class="info-box-title">WHEN IS ATTENDANCE TAKEN?</div>
-                    <p>Attendance is taken multiple times during the course of a campaign execution. Mainly it is done at the time of:</p>
-                    <ul style="margin: 15px 0 0 25px;">
-                        <li><strong>Trainings</strong></li>
-                        <li><strong>Registration</strong></li>
-                        <li><strong>Distribution</strong></li>
-                    </ul>
-                </div>
-
-                <div class="info-box success">
-                    <div class="info-box-title">WHY IS ATTENDANCE IMPORTANT?</div>
-                    <p>The employees who are working for the campaign are typically <strong>paid based on the days worked</strong>; this information is taken from the attendance system.</p>
-                </div>
-
-                <div class="info-box">
-                    <div class="info-box-title">WHAT HCM PROVIDES</div>
-                    <p>HCM provides a feature to mark the <strong>present</strong> and <strong>absent</strong> for every employee present in a campaign using the mobile app. To enable this, the attendance module has to be configured appropriately.</p>
-                </div>
-
-                <div class="info-box warning">
-                    <div class="info-box-title">KEY PREREQUISITE</div>
-                    <p><strong>Employee to campaign mapping</strong> is one of the key prerequisite information that needs to be mapped before one can use the module. Here in this module we will cover the mappings required for attendance.</p>
-                </div>
-
-                <div class="subsection">
-                    <h3>DEMO ENVIRONMENT CREDENTIALS</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr><th>ITEM</th><th>VALUE</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>Domain URL</td><td><code>https://health-demo.digit.org</code></td></tr>
-                                <tr><td>Username</td><td><code>ADMIN-1</code></td></tr>
-                                <tr><td>Password</td><td><code>eGov@1234</code></td></tr>
-                                <tr><td>Tenant ID</td><td><code>mz</code></td></tr>
-                            </tbody>
-                        </table>
+            <div class="scanner-body">
+                <div id="scan-area-signin">
+                    <div class="scan-overlay" id="overlay-signin">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4"/></svg>
+                        <p>Scan a staff ID card to add them</p>
+                        <button class="scan-btn gold-btn" onclick="startScan('signin')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            START SCANNER
+                        </button>
+                    </div>
+                    <div id="reader-signin" style="display:none;"></div>
+                    <div style="text-align:center;display:none;" id="stop-signin">
+                        <button class="scan-btn stop-btn" onclick="stopScan('signin')" style="margin-top:12px;">STOP</button>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="nav-buttons">
-                    <button class="nav-btn secondary" disabled>PREVIOUS</button>
-                    <button class="nav-btn" onclick="nextSection()">NEXT: TOPIC 2</button>
-                </div>
-            </section>
-
-            <!-- ==================== SECTION 2: OVERVIEW ==================== -->
-            <section id="section2" class="section-content">
-                <div class="section-title-bar">
-                    <div class="section-number">2</div>
-                    <div class="section-title">TOPIC 2: STEPS TO CONFIGURE ATTENDANCE MODULE</div>
-                </div>
-
-                <div class="info-box">
-                    <div class="info-box-title">TWO MAIN TASKS</div>
-                    <ul style="margin: 10px 0 0 25px;">
-                        <li><strong>Create Attendance Register CSV</strong></li>
-                        <li><strong>Ingest Attendance</strong></li>
-                    </ul>
-                </div>
-
-                <div class="process-flow">
-                    <div class="process-step">
-                        <div class="step-num">1</div>
-                        <p>Create Attendance<br>Register CSV</p>
-                    </div>
-                    <div class="process-step">
-                        <div class="step-num">2</div>
-                        <p>Script<br>Pre-Checks</p>
-                    </div>
-                    <div class="process-step">
-                        <div class="step-num">3</div>
-                        <p>Ingest<br>CSV Files</p>
-                    </div>
-                </div>
-
-                <div class="info-box danger">
-                    <div class="info-box-title">IMPORTANT PREREQUISITE</div>
-                    <p>To create the attendance, <strong>all the required users should be present in the system</strong>. If any of the users are not available, the users need to be ingested into the system FIRST.</p>
-                </div>
-
-                <div class="nav-buttons">
-                    <button class="nav-btn secondary" onclick="prevSection()">PREVIOUS</button>
-                    <button class="nav-btn" onclick="nextSection()">NEXT: STEP 1</button>
-                </div>
-            </section>
-
-            <!-- ==================== SECTION 3: STEP 1 - CREATE CSV ==================== -->
-            <section id="section3" class="section-content">
-                <div class="section-title-bar">
-                    <div class="section-number">3</div>
-                    <div class="section-title">STEP 1: CREATION OF ATTENDANCE REGISTER CSV</div>
-                </div>
-
-                <div class="info-box warning">
-                    <div class="info-box-title">PREREQUISITE</div>
-                    <p>To create the attendance, all the required users should be present in the system. If any of the users are not available, the users need to be ingested into the system first.</p>
-                </div>
-
-                <div style="text-align: center; margin: 20px 0;">
-                    <a href="#" class="download-btn" onclick="downloadCSV()">DOWNLOAD SAMPLE CSV TEMPLATE</a>
-                </div>
-
-                <div class="subsection">
-                    <h3>CSV COLUMNS (ALL FIELDS ARE REQUIRED *)</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>COLUMN</th>
-                                    <th>DESCRIPTION (FROM PDF)</th>
-                                    <th>EXAMPLE</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>name*</strong></td>
-                                    <td>Any names; generally we will use the campaign name</td>
-                                    <td><code>Malaria_Campaign_2026</code></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>code*</strong></td>
-                                    <td>Unique Names</td>
-                                    <td><code>MAL_ATT_001</code></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>startDate*</strong></td>
-                                    <td>Start date of the campaign for taking attendance (time in Epoch timestamp)</td>
-                                    <td><code>1767225600000</code></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>endDate*</strong></td>
-                                    <td>End date of the campaign for taking attendance (time in Epoch timestamp)</td>
-                                    <td><code>1769904000000</code></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>description*</strong></td>
-                                    <td>We can keep any text-based description (Generic usage is: CampaignName Attendance)</td>
-                                    <td><code>Malaria Campaign Attendance</code></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>boundaryName*</strong></td>
-                                    <td>HF/The CDD users boundary name</td>
-                                    <td><code>Western Area Urban</code></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>boundaryCode*</strong></td>
-                                    <td>HF/The CDD users boundary code</td>
-                                    <td><code>SL_WA_URBAN</code></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>boundaryType*</strong></td>
-                                    <td>The mentioned boundary Type (Like LGA)</td>
-                                    <td><code>LGA</code></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>staff*</strong></td>
-                                    <td>Userid of the attendance taker (Who is taking the attendance)</td>
-                                    <td><code>staff-uuid-111</code></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>approver*</strong></td>
-                                    <td>Userid of the attendance approver (Who will perform the attendance approval)</td>
-                                    <td><code>approver-uuid-111</code></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>attendees*</strong></td>
-                                    <td>List of all the attendees user IDs separated by commas</td>
-                                    <td><code>user1,user2,user3</code></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="subsection">
-                    <h3>CONVERTING DATES TO EPOCH TIMESTAMP</h3>
-                    <p>Dates must be in <strong>Epoch milliseconds</strong> format (13 digits). There are several ways to convert dates:</p>
-                    
-                    <h4 style="color: #004080; margin: 20px 0 10px 0;">METHOD 1: ONLINE CONVERTER</h4>
-                    <p>Use an online converter:</p>
-                    <div class="url-box">
-                        <a href="https://www.epochconverter.com/" target="_blank">https://www.epochconverter.com/</a>
-                    </div>
-                    <p style="margin-top: 10px;">Enter your date, and copy the <strong>milliseconds</strong> value (13 digits).</p>
-
-                    <h4 style="color: #004080; margin: 20px 0 10px 0;">METHOD 2: MANUAL CALCULATION</h4>
-                    <p>Epoch time is the number of milliseconds since January 1, 1970 00:00:00 UTC.</p>
-                    <div class="steps-container">
-                        <div class="step-item">
-                            <div class="step-number">1</div>
-                            <div class="step-content">
-                                <h4>Calculate days from Jan 1, 1970 to your date</h4>
-                                <p>Example: Jan 1, 2026 = 56 years = approximately 20,454 days</p>
-                            </div>
-                        </div>
-                        <div class="step-item">
-                            <div class="step-number">2</div>
-                            <div class="step-content">
-                                <h4>Convert to milliseconds</h4>
-                                <p>Days x 24 x 60 x 60 x 1000 = milliseconds</p>
-                                <p>20,454 x 86,400,000 = 1,767,225,600,000</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h4 style="color: #217346; margin: 20px 0 10px 0;">METHOD 3: EXCEL FORMULA (RECOMMENDED)</h4>
-                    <p>Use this Excel formula to convert a date in cell A1 to Epoch milliseconds:</p>
-                    <div class="excel-formula">=(A1-DATE(1970,1,1))*86400000</div>
-                    
-                    <div class="info-box">
-                        <div class="info-box-title">WHY 86,400,000?</div>
-                        <p>This number represents the <strong>number of milliseconds in one day</strong>:</p>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>CALCULATION</th>
-                                        <th>VALUE</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Hours in a day</td>
-                                        <td>24</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Minutes in an hour</td>
-                                        <td>60</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Seconds in a minute</td>
-                                        <td>60</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Milliseconds in a second</td>
-                                        <td>1,000</td>
-                                    </tr>
-                                    <tr style="background: #e7f3ff; font-weight: 700;">
-                                        <td>24 x 60 x 60 x 1000 =</td>
-                                        <td>86,400,000 milliseconds</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <p style="margin-top: 10px;">The Excel formula <code>(A1-DATE(1970,1,1))</code> gives the number of <strong>days</strong> since January 1, 1970. Multiplying by 86,400,000 converts those days into <strong>milliseconds</strong>.</p>
-                    </div>
-                    
-                    <p style="margin-top: 15px;"><strong>Step-by-step in Excel:</strong></p>
-                    <div class="steps-container">
-                        <div class="step-item">
-                            <div class="step-number">1</div>
-                            <div class="step-content">
-                                <h4>Enter your date in column A</h4>
-                                <p>Example: Cell A1 = <code>1/1/2026</code></p>
-                            </div>
-                        </div>
-                        <div class="step-item">
-                            <div class="step-number">2</div>
-                            <div class="step-content">
-                                <h4>Enter the formula in column B</h4>
-                                <p>Cell B1 = <code>=(A1-DATE(1970,1,1))*86400000</code></p>
-                            </div>
-                        </div>
-                        <div class="step-item">
-                            <div class="step-number">3</div>
-                            <div class="step-content">
-                                <h4>Format as Number (no decimals)</h4>
-                                <p>Right-click cell B1 > Format Cells > Number > 0 decimal places</p>
-                            </div>
-                        </div>
-                        <div class="step-item">
-                            <div class="step-number">4</div>
-                            <div class="step-content">
-                                <h4>Copy the value</h4>
-                                <p>Result: <code>1767225600000</code></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h4 style="color: #004080; margin: 20px 0 10px 0;">COMMON DATE CONVERSIONS REFERENCE</h4>
-                    <div class="table-container">
-                        <table>
-                            <thead><tr><th>DATE</th><th>EPOCH (MILLISECONDS)</th></tr></thead>
-                            <tbody>
-                                <tr><td>January 1, 2026</td><td><code>1767225600000</code></td></tr>
-                                <tr><td>February 1, 2026</td><td><code>1769904000000</code></td></tr>
-                                <tr><td>March 1, 2026</td><td><code>1772323200000</code></td></tr>
-                                <tr><td>April 1, 2026</td><td><code>1775001600000</code></td></tr>
-                                <tr><td>May 1, 2026</td><td><code>1777593600000</code></td></tr>
-                                <tr><td>June 1, 2026</td><td><code>1780272000000</code></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="nav-buttons">
-                    <button class="nav-btn secondary" onclick="prevSection()">PREVIOUS</button>
-                    <button class="nav-btn" onclick="nextSection()">NEXT: STEP 2</button>
-                </div>
-            </section>
-
-            <!-- ==================== SECTION 4: STEP 2 - PRE-CHECKS ==================== -->
-            <section id="section4" class="section-content">
-                <div class="section-title-bar">
-                    <div class="section-number">4</div>
-                    <div class="section-title">STEP 2: ATTENDANCE INGESTION SCRIPT PRE-CHECKS</div>
-                </div>
-
-                <div class="info-box warning">
-                    <div class="info-box-title">FROM THE PDF</div>
-                    <p>"For every campaign, the following attributes should be updated with the correct values before starting with the ingestion process."</p>
-                </div>
-
-                <div class="subsection">
-                    <h3>ATTRIBUTES TO UPDATE (FROM PDF - STEP 2)</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ATTRIBUTE</th>
-                                    <th>DESCRIPTION (FROM PDF)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="must-change">
-                                    <td><strong>tenantId</strong></td>
-                                    <td>"This ID is specific to the campaign and is created at the beginning of DIGIT environment setup"</td>
-                                </tr>
-                                <tr class="must-change">
-                                    <td><strong>uuid</strong></td>
-                                    <td>"This is the unique user ID generated by the system for every user (app or web portal). <strong>Use the uuid of the Admin who has access to HRMS in Web Portal</strong> to run this script."</td>
-                                </tr>
-                                <tr class="must-change">
-                                    <td><strong>Campaign Name</strong></td>
-                                    <td>"This is a unique campaign name assigned during DIGIT environment setup."</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="subsection">
-                    <h3>AUTHENTICATION (FROM PDF - STEP 3)</h3>
-                    <p>AUTH_TOKEN should be generated using the auth API:</p>
-                    <div class="url-box">&lt;domain_URL&gt;/user/oauth/token</div>
-                    <p style="margin-top: 10px;"><strong>For Demo:</strong></p>
-                    <div class="url-box">https://health-demo.digit.org/user/oauth/token</div>
-
-                    <h4 style="color: #004080; margin: 15px 0 10px 0;">Postman Body (x-www-form-urlencoded):</h4>
-                    <div class="table-container">
-                        <table>
-                            <thead><tr><th>KEY</th><th>VALUE</th></tr></thead>
-                            <tbody>
-                                <tr><td><code>grant_type</code></td><td><code>password</code></td></tr>
-                                <tr><td><code>scope</code></td><td><code>read</code></td></tr>
-                                <tr><td><code>username</code></td><td><code>ADMIN-1</code></td></tr>
-                                <tr><td><code>password</code></td><td><code>eGov@1234</code></td></tr>
-                                <tr><td><code>tenantId</code></td><td><code>mz</code></td></tr>
-                                <tr><td><code>userType</code></td><td><code>EMPLOYEE</code></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p style="margin-top: 10px;"><strong>Header:</strong> <code>Authorization: Basic ZWdvdi11c2VyLWNsaWVudDo=</code></p>
-                </div>
-
-                <div class="nav-buttons">
-                    <button class="nav-btn secondary" onclick="prevSection()">PREVIOUS</button>
-                    <button class="nav-btn" onclick="nextSection()">NEXT: STEP 3</button>
-                </div>
-            </section>
-
-            <!-- ==================== SECTION 5: STEP 3 - RUN SCRIPT ==================== -->
-            <section id="section5" class="section-content">
-                <div class="section-title-bar">
-                    <div class="section-number">5</div>
-                    <div class="section-title">STEP 3: INGESTION OF ATTENDANCE CSV FILES</div>
-                </div>
-
-                <div class="info-box">
-                    <div class="info-box-title">FROM THE PDF</div>
-                    <p>"Run the following python script in <strong>JupyterHub</strong> to fetch each record from the attendance register CSV and feed it as payload to the API. The script will automatically do this for all the records in the list."</p>
-                </div>
-
-                <div class="subsection">
-                    <h3>FOLDER SETUP</h3>
-                    <div class="folder-structure">
-<span class="folder">your_project/</span>
-|-- <span class="folder">attendancefiles/</span>
-|   |-- <span class="file">your_attendance.csv</span>
-|-- <span class="file">ingest_attendance.py</span></div>
-                </div>
-
-                <!-- Legend -->
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color change"></div>
-                        <span>MUST CHANGE</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color no-change"></div>
-                        <span>DO NOT CHANGE</span>
-                    </div>
-                </div>
-
-                <div class="subsection">
-                    <h3>WHAT TO CHANGE vs WHAT NOT TO CHANGE</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>FIELD IN SCRIPT</th>
-                                    <th>CHANGE?</th>
-                                    <th>ORIGINAL VALUE (PDF)</th>
-                                    <th>DEMO VALUE</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="must-change">
-                                    <td><code>url</code></td>
-                                    <td><span class="badge badge-change">CHANGE</span></td>
-                                    <td><code>http://localhost:8080/...</code></td>
-                                    <td><code>https://health-demo.digit.org/...</code></td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td><code>directory_path</code></td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td><code>"attendancefiles"</code></td>
-                                    <td><code>"attendancefiles"</code></td>
-                                </tr>
-                                <tr class="must-change">
-                                    <td><code>tenantId</code> (appears 3x)</td>
-                                    <td><span class="badge badge-change">CHANGE</span></td>
-                                    <td><code>"cg"</code></td>
-                                    <td><code>"mz"</code></td>
-                                </tr>
-                                <tr class="must-change">
-                                    <td><code>authToken</code></td>
-                                    <td><span class="badge badge-change">CHANGE</span></td>
-                                    <td><code>"ee36fdd7-..."</code></td>
-                                    <td>Your generated token</td>
-                                </tr>
-                                <tr class="must-change">
-                                    <td><code>id</code></td>
-                                    <td><span class="badge badge-change">CHANGE</span></td>
-                                    <td><code>93</code> (for qa) / <code>3632</code> (for prod)</td>
-                                    <td>Your user ID</td>
-                                </tr>
-                                <tr class="must-change">
-                                    <td><code>userName</code></td>
-                                    <td><span class="badge badge-change">CHANGE</span></td>
-                                    <td><code>"khushali"</code></td>
-                                    <td><code>"ADMIN-1"</code></td>
-                                </tr>
-                                <tr class="must-change">
-                                    <td><code>name</code></td>
-                                    <td><span class="badge badge-change">CHANGE</span></td>
-                                    <td><code>"Khushali"</code></td>
-                                    <td>Your name</td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td><code>salutation</code></td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td><code>None</code></td>
-                                    <td><code>None</code></td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td><code>gender</code></td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td><code>None</code></td>
-                                    <td><code>None</code></td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td><code>mobileNumber</code></td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td><code>"9999999999"</code></td>
-                                    <td><code>"9999999999"</code></td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td><code>emailId, altContactNumber, pan, aadhaarNumber, permanentAddress, etc.</code></td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td><code>None</code></td>
-                                    <td><code>None</code></td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td><code>active</code></td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td><code>True</code></td>
-                                    <td><code>True</code></td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td><code>type</code></td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td><code>"EMPLOYEE"</code></td>
-                                    <td><code>"EMPLOYEE"</code></td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td><code>accountLocked</code></td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td><code>False</code></td>
-                                    <td><code>False</code></td>
-                                </tr>
-                                <tr class="must-change">
-                                    <td><code>createdBy</code></td>
-                                    <td><span class="badge badge-change">CHANGE</span></td>
-                                    <td><code>93</code></td>
-                                    <td>Same as your <code>id</code></td>
-                                </tr>
-                                <tr class="must-change">
-                                    <td><code>lastModifiedBy</code></td>
-                                    <td><span class="badge badge-change">CHANGE</span></td>
-                                    <td><code>93</code></td>
-                                    <td>Same as your <code>id</code></td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td><code>roles</code> (structure)</td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td>SYSTEM_ADMINISTRATOR</td>
-                                    <td>Keep structure (update tenantId inside)</td>
-                                </tr>
-                                <tr class="must-change">
-                                    <td><code>uuid</code></td>
-                                    <td><span class="badge badge-change">CHANGE</span></td>
-                                    <td><code>"06f1bec4-913c-444e-ad11-b2cda85bb6b0"</code></td>
-                                    <td>Your UUID from profile</td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td><code>createdDate, lastModifiedDate</code></td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td><code>"27-03-2023 09:54:50"</code></td>
-                                    <td>Keep existing values</td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td><code>dob, pwdExpiryDate</code></td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td><code>None</code> / existing value</td>
-                                    <td>Keep existing values</td>
-                                </tr>
-                                <tr class="no-change">
-                                    <td>File processing loop (bottom of script)</td>
-                                    <td><span class="badge badge-no-change">NO CHANGE</span></td>
-                                    <td>for filename in file_list...</td>
-                                    <td>Keep as is</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="info-box success">
-                    <div class="info-box-title">SUMMARY: FIELDS TO CHANGE</div>
-                    <ol style="margin: 10px 0 0 20px; font-size: 13px;">
-                        <li><code>url</code> - Change localhost to your domain</li>
-                        <li><code>tenantId</code> - Change "cg" to your tenant (appears 3 times!)</li>
-                        <li><code>authToken</code> - Your generated token</li>
-                        <li><code>id</code>, <code>createdBy</code>, <code>lastModifiedBy</code> - Your user ID (same value for all 3)</li>
-                        <li><code>userName</code>, <code>name</code> - Your username and name</li>
-                        <li><code>uuid</code> - Your UUID from profile page</li>
-                    </ol>
-                </div>
-
-                <div class="code-block-header">
-                    <span>COMPLETE PYTHON SCRIPT WITH CHANGE MARKERS</span>
-                    <button class="copy-btn" onclick="copyCode('fullScript')">COPY</button>
-                </div>
-                <div class="code-block-content" id="fullScript">import json
-import time
-import requests
-import os
-
-# =====================================================
-# <span class="hl-change">CHANGE THIS</span> - URL (from localhost to your domain)
-# =====================================================
-url = "https://health-demo.digit.org/hcm-moz-impl/v1/attendance/create"
-
-# <span class="hl-no-change">DO NOT CHANGE</span> - Directory path
-directory_path = "attendancefiles"
-
-payload = {
-    "AttendanceRequest": json.dumps({
-        # <span class="hl-change">CHANGE</span> - tenantId (1 of 3)
-        "tenantId": "mz",
-        "requestInfo": {
-            # <span class="hl-change">CHANGE</span> - Your auth token
-            "authToken": "YOUR_AUTH_TOKEN_HERE",
-            "userInfo": {
-                # <span class="hl-change">CHANGE</span> - Your user ID (same value for createdBy/lastModifiedBy)
-                "id": 93,
-                # <span class="hl-change">CHANGE</span> - Your username
-                "userName": "ADMIN-1",
-                # <span class="hl-no-change">DO NOT CHANGE</span> - Keep as None
-                "salutation": None,
-                # <span class="hl-change">CHANGE</span> - Your name
-                "name": "Admin User",
-                # <span class="hl-no-change">DO NOT CHANGE</span> - Keep all these as None or original values
-                "gender": None,
-                "mobileNumber": "9999999999",
-                "emailId": None,
-                "altContactNumber": None,
-                "pan": None,
-                "aadhaarNumber": None,
-                "permanentAddress": None,
-                "permanentCity": None,
-                "permanentPinCode": None,
-                "correspondenceAddress": None,
-                "correspondenceCity": None,
-                "correspondencePinCode": None,
-                "alternatemobilenumber": None,
-                "active": True,
-                "locale": None,
-                "type": "EMPLOYEE",
-                "accountLocked": False,
-                "accountLockedDate": 0,
-                "fatherOrHusbandName": None,
-                "relationship": None,
-                "signature": None,
-                "bloodGroup": None,
-                "photo": None,
-                "identificationMark": None,
-                # <span class="hl-change">CHANGE</span> - Same as your id
-                "createdBy": 93,
-                # <span class="hl-change">CHANGE</span> - Same as your id
-                "lastModifiedBy": 93,
-                # <span class="hl-change">CHANGE</span> - tenantId (2 of 3)
-                "tenantId": "mz",
-                "roles": [
-                    {
-                        # <span class="hl-no-change">DO NOT CHANGE</span> - Keep role code/name
-                        "code": "SYSTEM_ADMINISTRATOR",
-                        "name": "System Administrator",
-                        # <span class="hl-change">CHANGE</span> - tenantId (3 of 3)
-                        "tenantId": "mz"
-                    }
-                ],
-                # <span class="hl-change">CHANGE</span> - Your UUID from profile page
-                "uuid": "YOUR_UUID_HERE",
-                # <span class="hl-no-change">DO NOT CHANGE</span> - Keep these dates
-                "createdDate": "27-03-2023 09:54:50",
-                "lastModifiedDate": "27-03-2023 09:54:50",
-                "dob": None,
-                "pwdExpiryDate": "25-06-2023 09:54:50"
-            }
-        }
-    })
-}
-
-# =====================================================
-# <span class="hl-no-change">DO NOT CHANGE</span> - File processing loop
-# =====================================================
-file_list = os.listdir(directory_path)
-
-for filename in file_list:
-    print(filename)
-    files = [
-        ('file', ('file', open('attendancefiles/' + filename, 'rb'), 'application/octet-stream'))
-    ]
-    headers = {
-        'Accept': 'application/json'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print(response.text)
-    time.sleep(1)</div>
-
-                <div class="nav-buttons">
-                    <button class="nav-btn secondary" onclick="prevSection()">PREVIOUS</button>
-                    <button class="nav-btn" onclick="nextSection()">NEXT: RESPONSE</button>
-                </div>
-            </section>
-
-            <!-- ==================== SECTION 6: RESPONSE ==================== -->
-            <section id="section6" class="section-content">
-                <div class="section-title-bar">
-                    <div class="section-number">6</div>
-                    <div class="section-title">RESPONSE TO THE SCRIPT</div>
-                </div>
-
-                <div class="info-box success">
-                    <div class="info-box-title">FROM THE PDF - SUCCESS RESPONSE</div>
-                    <p>"For every successful CSV file data, we can see the success message as below:"</p>
-                </div>
-
-                <div class="code-block-header">
-                    <span>SUCCESS MESSAGE (FROM PDF)</span>
-                </div>
-                <div class="code-block-content">{"ResponseInfo":{"apiId":null,"ver":null,"ts":null,"resMsgId":null,"msgId":null,"status":"<span style="color:#4ec9b0;font-weight:bold;">Success</span>"},"tenantId":"tg","jobId":"443675ee-c121-4f1d-a477-95bded0d7284","jobStatus":"<span style="color:#4ec9b0;font-weight:bold;">Completed</span>","province":null,"errors":[]}</div>
-
-                <div class="subsection">
-                    <h3>KEY SUCCESS INDICATORS</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead><tr><th>FIELD</th><th>SUCCESS VALUE</th></tr></thead>
-                            <tbody>
-                                <tr><td><code>status</code></td><td><code>"Success"</code></td></tr>
-                                <tr><td><code>jobStatus</code></td><td><code>"Completed"</code></td></tr>
-                                <tr><td><code>errors</code></td><td><code>[]</code> (empty array)</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="info-box danger">
-                    <div class="info-box-title">FROM THE PDF - IF ERROR</div>
-                    <p>"Lack of any response would imply that the CSV has errors. Kindly correct them and retry."</p>
-                </div>
-
-                <div class="subsection">
-                    <h3>SAMPLE CSV</h3>
-                    <div style="text-align: center; margin: 10px 0;">
-                        <a href="#" class="download-btn" onclick="downloadCSV()">DOWNLOAD SAMPLE CSV</a>
-                    </div>
-                    <div class="code-block-header">
-                        <span>attendance_register.csv</span>
-                        <button class="copy-btn" onclick="copyCode('sampleCsv')">COPY</button>
-                    </div>
-                    <div class="code-block-content" id="sampleCsv">name,code,startDate,endDate,description,boundaryName,boundaryCode,boundaryType,staff,approver,attendees
-Malaria_Campaign_WU,MAL_ATT_001,1767225600000,1769904000000,Malaria Campaign Attendance,Western Urban,SL_WA_URBAN,LGA,staff-uuid-111,approver-uuid-111,"user-001,user-002,user-003,user-004,user-005"
-Malaria_Campaign_WR,MAL_ATT_002,1767225600000,1769904000000,Malaria Campaign Attendance,Western Rural,SL_WA_RURAL,LGA,staff-uuid-222,approver-uuid-222,"user-011,user-012,user-013,user-014,user-015"</div>
-                </div>
-
-                <div class="nav-buttons">
-                    <button class="nav-btn secondary" onclick="prevSection()">PREVIOUS</button>
-                    <button class="nav-btn" onclick="goToSection(1)">BACK TO START</button>
-                </div>
-            </section>
-
-        </main>
-
-        <!-- Footer -->
-        <footer class="page-footer">
-            <p><strong>ICF-SL</strong> | Informatics Consultancy Firm - Sierra Leone</p>
-            <p>Based on eGov Academy Documentation | January 2026</p>
-        </footer>
+        <!-- STAFF LIST -->
+        <div style="background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;margin-bottom:16px;">
+            <div style="padding:12px 16px;background:linear-gradient(135deg,var(--navy-deep),var(--navy-mid));display:flex;align-items:center;justify-content:space-between;">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:var(--gold);">TODAY'S STAFF</div>
+                <span style="background:rgba(255,193,7,.2);color:var(--gold-light);padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;" id="staff-count">0 SCANNED</span>
+            </div>
+            <div id="staff-list" style="max-height:420px;overflow-y:auto;">
+                <div style="padding:30px;text-align:center;font-size:13px;color:var(--text-light);">Scan ID cards to add staff</div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        let currentSection = 1;
-        const totalSections = 6;
+    <!-- STATS -->
+    <div class="tab-panel" id="panel-stats">
+        <div class="stats-summary">
+            <div class="stat-box navy">
+                <div class="stat-label">Total Staff</div>
+                <div class="stat-value" id="totalUsers">0</div>
+            </div>
+            <div class="stat-box gold-s">
+                <div class="stat-label">Days Tracked</div>
+                <div class="stat-value" id="totalDays">0</div>
+            </div>
+            <div class="stat-box green-s">
+                <div class="stat-label">Full Days</div>
+                <div class="stat-value" id="totalFull">0</div>
+                <div class="stat-sub">Sign In + Sign Out</div>
+            </div>
+            <div class="stat-box red-s">
+                <div class="stat-label">Half Days</div>
+                <div class="stat-value" id="totalHalf">0</div>
+                <div class="stat-sub">Sign In Only</div>
+            </div>
+        </div>
 
-        const sectionNames = {
-            1: "TOPIC 1: CONTEXT",
-            2: "TOPIC 2: OVERVIEW",
-            3: "STEP 1: CREATE CSV",
-            4: "STEP 2: PRE-CHECKS",
-            5: "STEP 3: RUN SCRIPT",
-            6: "RESPONSE"
+        <div class="users-card">
+            <div class="users-header">
+                <div class="users-header-title">STAFF ATTENDANCE</div>
+                <div class="users-header-badge" id="usersCount">0 STAFF</div>
+            </div>
+            <div class="users-search">
+                <input type="text" placeholder="Search by name or ID..." id="searchUsers" oninput="renderUsers()">
+            </div>
+            <div class="users-list" id="usersList"><div class="history-empty">No attendance data yet</div></div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ACTION MODAL -->
+<div id="action-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:8000;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closeActionModal()">
+    <div style="background:#fff;border-radius:20px;overflow:hidden;width:100%;max-width:360px;box-shadow:0 20px 50px rgba(0,0,0,.3);">
+        <div id="modal-top" style="background:linear-gradient(135deg,var(--navy-mid),var(--navy));padding:20px;text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);letter-spacing:2px;" id="modal-name">—</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:3px;" id="modal-meta">—</div>
+            <div style="margin-top:8px;display:flex;gap:6px;justify-content:center;" id="modal-status"></div>
+        </div>
+        <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <button id="modal-btn-in" onclick="modalSignIn()"
+                style="padding:18px 10px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--navy);border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;cursor:pointer;">
+                SIGN IN
+            </button>
+            <button id="modal-btn-out" onclick="modalSignOut()"
+                style="padding:18px 10px;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;cursor:pointer;">
+                SIGN OUT
+            </button>
+        </div>
+        <div style="padding:0 16px 14px;text-align:center;">
+            <button onclick="closeActionModal()" style="background:none;border:1px solid #ddd;border-radius:8px;padding:6px 16px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;color:#aaa;cursor:pointer;">CLOSE</button>
+        </div>
+    </div>
+</div>
+
+<div class="notif" id="notif"></div>
+
+<script>
+const SCRIPT_URL  = 'https://script.google.com/macros/s/AKfycbymRy-M5v0fVLWUjw4IXYhd1oIR2ZvnP_Dzr_iGR-Th0cMIpmE2ntGeujWYH7-C6NHIzA/exec';
+const PASSWORD    = 'admin123';
+
+var signIns      = JSON.parse(localStorage.getItem('att_signins')    || '[]');
+var signOuts     = JSON.parse(localStorage.getItem('att_signouts')   || '[]');
+var scannedToday = JSON.parse(localStorage.getItem('att_scanned_today') || '[]'); // [{code,name,role,district,chiefdom,facility,phone}]
+var isLoggedIn   = localStorage.getItem('att_logged_in') === 'true';
+var activeUser   = null; // user whose modal is open
+var scanners     = {};
+
+// ── PASSWORD ─────────────────────────────────────────────────
+function checkPassword() {
+    var val = document.getElementById('pwd-input').value;
+    if (val === PASSWORD) {
+        isLoggedIn = true;
+        localStorage.setItem('att_logged_in', 'true');
+        document.getElementById('pwd-screen').style.display = 'none';
+        document.getElementById('main-app').style.display   = 'block';
+        renderStaffList();
+    } else {
+        document.getElementById('pwd-error').style.display = 'block';
+        document.getElementById('pwd-input').value = '';
+    }
+}
+
+function doLogout() {
+    isLoggedIn = false;
+    localStorage.removeItem('att_logged_in');
+    document.getElementById('main-app').style.display   = 'none';
+    document.getElementById('pwd-screen').style.display = 'flex';
+    document.getElementById('pwd-input').value = '';
+    document.getElementById('pwd-error').style.display = 'none';
+}
+
+function getToday() { return new Date().toISOString().split('T')[0]; }
+
+function parseQR(text) {
+    try {
+        var obj = JSON.parse(text);
+        return {
+            code:      obj.code || obj.id || obj.ID || text,
+            name:      obj.name || obj.Name || obj.fullName || '',
+            phone:     obj.phone || obj.Phone || '',
+            district:  obj.district || obj.District || '',
+            chiefdom:  obj.chiefdom || obj.Chiefdom || '',
+            facility:  obj.facility || obj.Facility || '',
+            community: obj.community || obj.Community || '',
+            role:      obj.role || obj.Role || ''
         };
+    } catch(e) {
+        return { code: text.trim(), name: '', phone: '', district: '', chiefdom: '', facility: '', community: '', role: '' };
+    }
+}
 
-        function goToSection(sectionNum) {
-            if (sectionNum < 1 || sectionNum > totalSections) return;
-            currentSection = sectionNum;
-            updateSectionDisplay();
-        }
+// ── TABS ─────────────────────────────────────────────────────
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelector('.tab-btn.' + tab).classList.add('active');
+    document.getElementById('panel-' + tab).classList.add('active');
+    Object.keys(scanners).forEach(function(k){ if(scanners[k]){ try{scanners[k].stop();}catch(e){} scanners[k]=null; } });
+    if (tab === 'stats') updateStats();
+}
 
-        function nextSection() {
-            if (currentSection < totalSections) {
-                currentSection++;
-                updateSectionDisplay();
-            }
-        }
-
-        function prevSection() {
-            if (currentSection > 1) {
-                currentSection--;
-                updateSectionDisplay();
-            }
-        }
-
-        function updateSectionDisplay() {
-            document.querySelectorAll('.section-content').forEach(section => {
-                section.classList.remove('active');
+// ── SCANNER ───────────────────────────────────────────────────
+function startScan(mode) {
+    var overlay  = document.getElementById('overlay-' + mode);
+    var readerEl = document.getElementById('reader-' + mode);
+    var stopEl   = document.getElementById('stop-' + mode);
+    overlay.style.display = 'none';
+    readerEl.style.display = 'block';
+    stopEl.style.display = 'block';
+    if (scanners[mode]) { try{scanners[mode].stop();}catch(e){} }
+    var scanner = new Html5Qrcode('reader-' + mode);
+    scanners[mode] = scanner;
+    scanner.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1 },
+        function(decoded) {
+            scanner.stop().then(function() {
+                scanners[mode] = null;
+                readerEl.style.display = 'none';
+                stopEl.style.display = 'none';
+                overlay.style.display = 'block';
+                handleScan(mode, decoded);
             });
+        },
+        function() {}
+    ).catch(function() {
+        overlay.style.display = 'block'; readerEl.style.display = 'none'; stopEl.style.display = 'none';
+        showNotif('Camera access denied', 'error');
+    });
+}
 
-            document.getElementById('section' + currentSection).classList.add('active');
-
-            document.querySelectorAll('.section-tab').forEach((tab, index) => {
-                tab.classList.toggle('active', index + 1 === currentSection);
-            });
-
-            const progress = (currentSection / totalSections) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressText').textContent = 
-                `Section ${currentSection} of ${totalSections} | ${sectionNames[currentSection]}`;
-
-            document.querySelector('.content-card').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function copyCode(elementId) {
-            const codeBlock = document.getElementById(elementId);
-            // Remove HTML tags for clean copy
-            const textToCopy = codeBlock.innerText;
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                event.target.textContent = 'COPIED!';
-                event.target.classList.add('copied');
-                setTimeout(() => {
-                    event.target.textContent = 'COPY';
-                    event.target.classList.remove('copied');
-                }, 2000);
-            });
-        }
-
-        function downloadCSV() {
-            const csvContent = `name,code,startDate,endDate,description,boundaryName,boundaryCode,boundaryType,staff,approver,attendees
-Malaria_Campaign_WU,MAL_ATT_001,1767225600000,1769904000000,Malaria Campaign Attendance,Western Urban,SL_WA_URBAN,LGA,staff-uuid-111,approver-uuid-111,"user-001,user-002,user-003,user-004,user-005"
-Malaria_Campaign_WR,MAL_ATT_002,1767225600000,1769904000000,Malaria Campaign Attendance,Western Rural,SL_WA_RURAL,LGA,staff-uuid-222,approver-uuid-222,"user-011,user-012,user-013,user-014,user-015"`;
-            
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'attendance_register_template.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowRight') nextSection();
-            else if (event.key === 'ArrowLeft') prevSection();
+function stopScan(mode) {
+    if (scanners[mode]) {
+        scanners[mode].stop().then(function() {
+            scanners[mode] = null;
+            document.getElementById('reader-' + mode).style.display = 'none';
+            document.getElementById('stop-' + mode).style.display = 'none';
+            document.getElementById('overlay-' + mode).style.display = 'block';
         });
-    </script>
+    }
+}
+
+// ── HANDLE SCAN ───────────────────────────────────────────────
+function handleScan(mode, text) {
+    var data = parseQR(text);
+    if (!data.name && !data.code) { showNotif('Invalid QR — use your SBD ID card', 'error'); return; }
+    // Add to today's scanned list if not already there
+    var exists = scannedToday.find(function(s){ return s.code === data.code; });
+    if (!exists) {
+        scannedToday.push(data);
+        localStorage.setItem('att_scanned_today', JSON.stringify(scannedToday));
+    }
+    renderStaffList();
+    showNotif('✓ ' + (data.name||data.code) + ' added — tap name to sign in/out', 'success');
+    // Open action modal immediately for scanned person
+    openActionModal(data);
+}
+
+
+function renderStaffList() {
+    var list  = document.getElementById('staff-list');
+    var count = document.getElementById('staff-count');
+    if (!list) return;
+    count.textContent = scannedToday.length + ' SCANNED';
+    if (!scannedToday.length) {
+        list.innerHTML = '<div style="padding:30px;text-align:center;font-size:13px;color:var(--text-light);">Scan ID cards to add staff</div>';
+        return;
+    }
+    var today = getToday();
+    list.innerHTML = scannedToday.map(function(d, idx) {
+        var doneIn   = signIns.find(function(s){ return s.code===d.code && s.date===today; });
+        var doneOut  = signOuts.find(function(s){ return s.code===d.code && s.date===today; });
+        var inTime   = doneIn  ? new Date(doneIn.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+        var outTime  = doneOut ? new Date(doneOut.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+        var inBadge  = doneIn  ? '<span style="background:#e8f5e9;color:#1e7e34;padding:2px 8px;border-radius:6px;font-size:9px;font-weight:700;">IN '+inTime+'</span>' : '';
+        var outBadge = doneOut ? '<span style="background:#fff8e1;color:#8a6500;padding:2px 8px;border-radius:6px;font-size:9px;font-weight:700;">OUT '+outTime+'</span>' : '';
+        var dot = doneIn && doneOut ? '#28a745' : doneIn ? '#c8991a' : '#dc3545';
+        var meta = (d.role&&d.district) ? d.role+' · '+d.district : (d.role||d.district||'');
+        return '<div data-idx="'+idx+'" onclick="openActionByIdx(this.dataset.idx)" style="padding:14px 18px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:12px;cursor:pointer;">'
+            +'<div style="width:10px;height:10px;border-radius:50%;background:'+dot+';flex-shrink:0;"></div>'
+            +'<div style="flex:1;min-width:0;">'
+            +'<div style="font-weight:700;font-size:14px;color:var(--text);">'+(d.name||d.code)+'</div>'
+            +'<div style="font-size:10px;color:var(--text-light);margin-top:2px;">'+meta+'</div>'
+            +'</div>'
+            +'<div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">'+inBadge+outBadge+'</div>'
+            +'</div>';
+    }).join('');
+}
+
+function openActionModal(d) {
+    activeUser = d;
+    var today   = getToday();
+    var doneIn  = signIns.find(function(s){ return s.code === d.code && s.date === today; });
+    var doneOut = signOuts.find(function(s){ return s.code === d.code && s.date === today; });
+    document.getElementById('modal-name').textContent = d.name || d.code || '—';
+    var _mm=document.getElementById('modal-meta'); if(_mm) _mm.textContent = (d.role||'')+(d.district?' · '+d.district:'')+(d.chiefdom?' · '+d.chiefdom:d.facility?' · '+d.facility:'');
+    var statEl = document.getElementById('modal-status');
+    statEl.innerHTML = (doneIn  ? '<span style="background:rgba(40,167,69,.25);color:#6ee7b7;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;">IN ' + new Date(doneIn.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) + '</span>' : '')
+        + (doneOut ? '<span style="background:rgba(255,193,7,.25);color:#fcd34d;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;">OUT ' + new Date(doneOut.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) + '</span>' : '');
+    var btnIn  = document.getElementById('modal-btn-in');
+    var btnOut = document.getElementById('modal-btn-out');
+    btnIn.disabled  = !!doneIn;
+    btnOut.disabled = !!doneOut || !doneIn;
+    btnIn.style.opacity  = doneIn  ? '0.5' : '1';
+    btnOut.style.opacity = (doneOut || !doneIn) ? '0.5' : '1';
+    btnIn.innerHTML  = doneIn  ? '✅ SIGNED IN'  : 'SIGN IN';
+    btnOut.innerHTML = doneOut ? '✅ SIGNED OUT' : 'SIGN OUT';
+    document.getElementById('action-modal').style.display = 'flex';
+}
+
+function openActionByIdx(idx) {
+    var d = scannedToday[parseInt(idx)];
+    if (d) openActionModal(d);
+}
+
+function closeActionModal() {
+    document.getElementById('action-modal').style.display = 'none';
+    activeUser = null;
+}
+
+function modalSignIn() {
+    if (!activeUser) return;
+    var d = activeUser, today = getToday();
+    var record = { action:'SIGN_IN', code:d.code, name:d.name||'', phone:d.phone||'',
+        district:d.district||'', chiefdom:d.chiefdom||'', facility:d.facility||'',
+        role:d.role||'', date:today, timestamp:new Date().toISOString() };
+    signIns.push(record);
+    localStorage.setItem('att_signins', JSON.stringify(signIns));
+    submitToSheets(record, function(){});
+    showNotif('✅ ' + (d.name||'') + ' signed in at ' + new Date().toLocaleTimeString(), 'success');
+    openActionModal(d); renderStaffList(); updateHistory();
+}
+
+function modalSignOut() {
+    if (!activeUser) return;
+    var d = activeUser, today = getToday();
+    var record = { action:'SIGN_OUT', code:d.code, name:d.name||'', phone:d.phone||'',
+        district:d.district||'', chiefdom:d.chiefdom||'', facility:d.facility||'',
+        role:d.role||'', date:today, timestamp:new Date().toISOString() };
+    signOuts.push(record);
+    localStorage.setItem('att_signouts', JSON.stringify(signOuts));
+    submitToSheets(record, function(){});
+    showNotif('✅ ' + (d.name||'') + ' signed out at ' + new Date().toLocaleTimeString(), 'success');
+    openActionModal(d); renderStaffList(); updateHistory();
+}
+
+
+
+function updateSessionButtons(data) { if(activeUser && activeUser.code === (data||{}).code) openActionModal(data); renderStaffList(); }
+
+
+
+
+// Keep legacy functions for signout tab compatibility
+function handleSignIn(data, today) {}
+function handleSignOut(data, today) {}
+function confirmSignIn() {}
+function confirmSignOut() {}
+
+// ── CONFIRM ───────────────────────────────────────────────────
+function confirmSignIn() {
+    var card = document.getElementById('device-signin');
+    var data = JSON.parse(card.dataset.userData);
+    var btn  = card.querySelector('.action-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner-sm"></div> PROCESSING...';
+
+    var record = { action:'SIGN_IN', code:data.code, name:data.name||'', phone:data.phone||'',
+        district:data.district||'', chiefdom:data.chiefdom||'', facility:data.facility||'',
+        community:data.community||'', role:data.role||'',
+        date:getToday(), timestamp:new Date().toISOString() };
+
+    signIns.push(record);
+    localStorage.setItem('att_signins', JSON.stringify(signIns));
+    submitToSheets(record, function() {
+        card.classList.remove('show');
+        showMessage('signin', 'success', 'SIGNED IN', (data.name||data.code),
+            'Signed in at ' + new Date().toLocaleTimeString());
+        updateHistory();
+        showNotif('Sign-in recorded!', 'success');
+    });
+}
+
+function confirmSignOut() {
+    var card = document.getElementById('device-signout');
+    var data = JSON.parse(card.dataset.userData);
+    var btn  = card.querySelector('.action-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner-sm"></div> PROCESSING...';
+
+    var record = { action:'SIGN_OUT', code:data.code, name:data.name||'', phone:data.phone||'',
+        district:data.district||'', chiefdom:data.chiefdom||'', facility:data.facility||'',
+        community:data.community||'', role:data.role||'',
+        date:getToday(), timestamp:new Date().toISOString() };
+
+    signOuts.push(record);
+    localStorage.setItem('att_signouts', JSON.stringify(signOuts));
+    submitToSheets(record, function() {
+        card.classList.remove('show');
+        showMessage('signout', 'success', 'SIGNED OUT', (data.name||data.code),
+            'Signed out at ' + new Date().toLocaleTimeString());
+        updateHistory();
+        showNotif('Sign-out recorded!', 'success');
+    });
+}
+
+// ── DISPLAY ───────────────────────────────────────────────────
+function showUserCard(mode, data, topClass, badgeClass, badgeText, note, showAction) {
+    var card = document.getElementById('device-' + mode);
+    document.getElementById('msg-' + mode).classList.remove('show');
+
+    var badgeIcon = {
+        'badge-register': '<svg viewBox="0 0 24 24" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>',
+        'badge-returned': '<svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+        'badge-error':    '<svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+        'badge-warning':  '<svg viewBox="0 0 24 24" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>'
+    }[badgeClass] || '';
+
+    var noteHTML   = note ? '<div style="background:' + (badgeClass==='badge-error'?'var(--red-bg)':'var(--orange-bg)') + ';padding:10px 14px;border-radius:10px;font-size:13px;color:var(--text-mid);font-weight:500;margin-bottom:16px;">' + note + '</div>' : '';
+    var actionHTML = '';
+    if (showAction && mode === 'signin')  actionHTML = '<button class="action-btn register-action" onclick="confirmSignIn()"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>CONFIRM SIGN IN</button>';
+    if (showAction && mode === 'signout') actionHTML = '<button class="action-btn return-action" onclick="confirmSignOut()"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>CONFIRM SIGN OUT</button>';
+
+    card.innerHTML =
+        '<div class="device-card-top ' + topClass + '">' +
+            '<div class="device-status-badge ' + badgeClass + '">' + badgeIcon + ' ' + badgeText + '</div>' +
+            '<div class="device-person">' + (data.name||'Unknown') + '</div>' +
+            '<div class="device-phone">' + (data.role||data.phone||'—') + '</div>' +
+            '<div class="device-code-display">' + data.code + '</div>' +
+        '</div>' +
+        '<div class="device-body">' +
+            noteHTML +
+            '<div class="info-grid">' +
+                '<div class="info-cell"><div class="info-key">District</div><div class="info-val">' + (data.district||'—') + '</div></div>' +
+                '<div class="info-cell"><div class="info-key">Chiefdom</div><div class="info-val">' + (data.chiefdom||'—') + '</div></div>' +
+                '<div class="info-cell"><div class="info-key">Phone</div><div class="info-val">' + (data.phone||'—') + '</div></div>' +
+                '<div class="info-cell"><div class="info-key">Facility</div><div class="info-val">' + (data.facility||'—') + '</div></div>' +
+            '</div>' +
+            actionHTML +
+        '</div>';
+
+    card.dataset.userData = JSON.stringify(data);
+    card.classList.add('show');
+}
+
+function showMessage(mode, type, title, text, detail) {
+    var card = document.getElementById('msg-' + mode);
+    document.getElementById('device-' + mode).classList.remove('show');
+    var icons = {
+        success: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="16 8 10 16 7 13"/></svg>',
+        error:   '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+        warning: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>'
+    };
+    card.className = 'msg-card show ' + type + '-msg';
+    card.innerHTML = icons[type] +
+        '<div class="msg-title">' + title + '</div>' +
+        '<div class="msg-text">' + text + '</div>' +
+        (detail ? '<div class="msg-detail">' + detail + '</div>' : '') +
+        '<button class="scan-again-btn" onclick="scanAgain(\'' + mode + '\')">SCAN ANOTHER</button>';
+}
+
+function scanAgain(mode) {
+    document.getElementById('msg-' + mode).classList.remove('show');
+    document.getElementById('device-' + mode).classList.remove('show');
+    startScan(mode);
+}
+
+// ── GAS SUBMIT ─────────────────────────────────────────────────
+function submitToSheets(record, cb) {
+    var payload = Object.assign({}, record, { action2: 'handleSignInOut' });
+    fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(payload) })
+    .then(function(){ cb(); })
+    .catch(function(){ cb(); }); // fail open
+}
+
+// ── HISTORY ───────────────────────────────────────────────────
+function updateHistory() {
+    var today    = getToday();
+    var todayIns = signIns.filter(function(s){ return s.date===today; });
+    var todayOuts= signOuts.filter(function(s){ return s.date===today; });
+    var siEl = document.getElementById('signin-count');  if(siEl)  siEl.textContent  = todayIns.length;
+    var soEl = document.getElementById('signout-count'); if(soEl)  soEl.textContent  = todayOuts.length;
+    var regEl= document.getElementById('reg-count');     if(regEl) regEl.textContent = todayIns.length;
+    var retEl= document.getElementById('ret-count');     if(retEl) retEl.textContent = todayOuts.length;
+    renderStaffList();
+}
+
+
+// ── STATS ─────────────────────────────────────────────────────
+function getAllUsers() {
+    var map = {};
+    signIns.forEach(function(s) {
+        if (!map[s.code]) map[s.code] = { code:s.code, name:s.name||'Unknown', district:s.district||'', role:s.role||'', dates:{} };
+        if (s.name) map[s.code].name = s.name;
+        map[s.code].dates[s.date] = { signIn: s.timestamp, signOut: null };
+    });
+    signOuts.forEach(function(s) {
+        if (map[s.code] && map[s.code].dates[s.date]) map[s.code].dates[s.date].signOut = s.timestamp;
+    });
+    return Object.values(map).map(function(u) {
+        var full=0, half=0;
+        Object.values(u.dates).forEach(function(d){ if(d.signOut) full++; else half++; });
+        return Object.assign({}, u, { fullDays:full, halfDays:half, totalDays:full+half });
+    }).sort(function(a,b){ return b.totalDays - a.totalDays; });
+}
+
+function updateStats() {
+    var users = getAllUsers();
+    var allDates = new Set();
+    var totalFull=0, totalHalf=0;
+    users.forEach(function(u){
+        totalFull += u.fullDays; totalHalf += u.halfDays;
+        Object.keys(u.dates).forEach(function(d){ allDates.add(d); });
+    });
+    document.getElementById('totalUsers').textContent = users.length;
+    document.getElementById('totalDays').textContent  = allDates.size;
+    document.getElementById('totalFull').textContent  = totalFull;
+    document.getElementById('totalHalf').textContent  = totalHalf;
+    document.getElementById('usersCount').textContent = users.length + ' STAFF';
+    renderUsers();
+}
+
+function renderUsers() {
+    var users  = getAllUsers();
+    var search = (document.getElementById('searchUsers').value||'').toLowerCase();
+    var filtered = search ? users.filter(function(u){ return (u.name||'').toLowerCase().includes(search)||(u.code||'').toLowerCase().includes(search); }) : users;
+    var colors = ['#0056a8','#0d9488','#7c3aed','#dc3545','#e6a800','#1e7e34','#b45309','#6366f1'];
+    document.getElementById('usersList').innerHTML = filtered.length ? filtered.map(function(u,i){
+        var initials = u.name ? u.name.split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase() : u.code.substring(0,2);
+        return '<div class="user-item">' +
+            '<div class="user-avatar" style="background:' + colors[i%colors.length] + '">' + initials + '</div>' +
+            '<div class="user-info">' +
+                '<div class="user-name">' + (u.name||u.code) + '</div>' +
+                '<div class="user-meta"><span>' + (u.district||'—') + '</span><span>' + (u.role||'—') + '</span></div>' +
+            '</div>' +
+            '<div style="text-align:right"><div class="user-days">' + u.totalDays + '</div><div class="user-days-lbl">DAYS</div>' +
+            '<div style="font-size:10px;color:var(--text-light);margin-top:2px;">' + u.fullDays + ' full · ' + u.halfDays + ' half</div></div>' +
+        '</div>';
+    }).join('') : '<div class="history-empty">No matching staff</div>';
+}
+
+// ── NOTIF ─────────────────────────────────────────────────────
+function showNotif(msg, type) {
+    var el = document.getElementById('notif');
+    el.textContent = msg;
+    el.className = 'notif show ' + (type||'info');
+    clearTimeout(el._t);
+    el._t = setTimeout(function(){ el.className = 'notif'; }, 2500);
+}
+
+updateHistory();
+</script>
 </body>
 </html>
