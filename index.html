@@ -815,10 +815,13 @@ function signOutDirect(idx){
 function switchTab(t){
     document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
     document.getElementById('tab-'+t).classList.add('active');
-    document.getElementById('panel-scan').style.display=t==='scan'?'block':'none';
-    document.getElementById('panel-stats').style.display=t==='stats'?'block':'none';
-    if(t==='stats')renderStats();
-    
+    document.getElementById('panel-scan').style.display    = t==='scan'    ? 'block':'none';
+    document.getElementById('panel-signin').style.display  = t==='signin'  ? 'block':'none';
+    document.getElementById('panel-signout').style.display = t==='signout' ? 'block':'none';
+    document.getElementById('panel-stats').style.display   = t==='stats'   ? 'block':'none';
+    if(t==='stats')   renderStats();
+    if(t==='signin')  renderSignInTab();
+    if(t==='signout') renderSignOutTab();
 }
 
 // ── STATS ─────────────────────────────────────────────────────
