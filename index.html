@@ -674,13 +674,24 @@ function renderSignInTab(){
         list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text-light);font-size:13px;">No team members added yet — go to TEAM tab to add members</div>';
         return;
     }
-    if(!pending.length){
-        list.innerHTML='<div style="text-align:center;padding:40px 20px;"><div style="font-size:40px;margin-bottom:8px;">✅</div><div style="font-family:Bebas Neue,sans-serif;font-size:18px;color:var(--green-d);letter-spacing:1px;">ALL SIGNED IN</div></div>';
-        return;
-    }
-    list.innerHTML=pending.map(function(d){
+    // Show ALL members — signed in ones show a done badge, pending ones show button
+    list.innerHTML=scannedToday.map(function(d){
         var idx=scannedToday.indexOf(d);
         var c=color(d.name), ini=initials(d.name);
+        var dIn=signIns.find(function(s){return s.code===d.code&&s.date===today;});
+        if(dIn){
+            return '<div class="staff-card signed-in" style="border:2px solid #b2dfcc;">'
+                +'<div class="staff-card-top">'
+                +'<div class="staff-avatar" style="background:'+c+';">'+ini+'</div>'
+                +'<div class="staff-info">'
+                +'<div class="staff-name">'+(d.name||d.code)+'</div>'
+                +'<div class="staff-role">'+(d.role||'—')+'</div>'
+                +'<div class="staff-district">'+(d.district||'')+(d.chiefdom?' · '+d.chiefdom:'')+'</div>'
+                +'</div>'
+                +'<div class="staff-status"><span class="status-pill pill-in">✅ IN '+fmtTime(dIn.timestamp)+'</span></div>'
+                +'</div>'
+                +'</div>';
+        }
         return '<div class="staff-card" style="border:2px solid var(--border);">'
             +'<div class="staff-card-top">'
             +'<div class="staff-avatar" style="background:'+c+';">'+ini+'</div>'
@@ -718,26 +729,40 @@ function signInDirect(idx){
 // ── SIGN OUT TAB ──────────────────────────────────────────────
 function renderSignOutTab(){
     var today=getToday();
-    var signedIn=scannedToday.filter(function(d){
-        return signIns.find(function(s){return s.code===d.code&&s.date===today;})
-            && !signOuts.find(function(s){return s.code===d.code&&s.date===today;});
+    var withSignIn=scannedToday.filter(function(d){
+        return signIns.find(function(s){return s.code===d.code&&s.date===today;});
     });
     var badge=document.getElementById('signout-badge');
-    if(badge) badge.textContent=signedIn.length+' SIGNED IN';
+    if(badge) badge.textContent=withSignIn.length+' SIGNED IN';
     var list=document.getElementById('signout-list');
     if(!list)return;
     if(!scannedToday.length){
         list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text-light);font-size:13px;">No team members added yet — go to TEAM tab to add members</div>';
         return;
     }
-    if(!signedIn.length){
-        list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text-light);font-size:13px;">No one has signed in yet or all have signed out</div>';
+    if(!withSignIn.length){
+        list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text-light);font-size:13px;">No one has signed in yet — go to SIGN IN tab first</div>';
         return;
     }
-    list.innerHTML=signedIn.map(function(d){
+    // Show ALL signed-in members — signed out ones show done badge, pending show button
+    list.innerHTML=withSignIn.map(function(d){
         var idx=scannedToday.indexOf(d);
         var c=color(d.name), ini=initials(d.name);
         var dIn=signIns.find(function(s){return s.code===d.code&&s.date===today;});
+        var dOut=signOuts.find(function(s){return s.code===d.code&&s.date===today;});
+        if(dOut){
+            return '<div class="staff-card signed-full" style="border:2px solid #b2dfcc;">'
+                +'<div class="staff-card-top">'
+                +'<div class="staff-avatar" style="background:'+c+';">'+ini+'</div>'
+                +'<div class="staff-info">'
+                +'<div class="staff-name">'+(d.name||d.code)+'</div>'
+                +'<div class="staff-role">'+(d.role||'—')+'</div>'
+                +'<div class="staff-district">'+(d.district||'')+(d.chiefdom?' · '+d.chiefdom:'')+'</div>'
+                +'</div>'
+                +'<div class="staff-status"><span class="status-pill pill-full">✅ OUT '+fmtTime(dOut.timestamp)+'</span></div>'
+                +'</div>'
+                +'</div>';
+        }
         var elapsed=Date.now()-new Date(dIn.timestamp).getTime();
         var remaining=SIGNOUT_DELAY_MS-elapsed;
         var canOut=remaining<=0;
@@ -750,16 +775,16 @@ function renderSignOutTab(){
             +'<div class="staff-role">'+(d.role||'—')+'</div>'
             +'<div class="staff-district">'+(d.district||'')+(d.chiefdom?' · '+d.chiefdom:'')+'</div>'
             +'</div>'
-            +'<div class="staff-status"><span class="status-pill pill-in">IN '+fmt(dIn.timestamp)+'</span></div>'
+            +'<div class="staff-status"><span class="status-pill pill-in">IN '+fmtTime(dIn.timestamp)+'</span></div>'
             +'</div>'
             +(canOut?''
                 :'<div style="background:var(--orange-l);border-top:1px solid #fde68a;padding:8px 16px;display:flex;align-items:center;gap:8px;font-size:11px;color:#92400e;">'
                 +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
-                +'Sign out available in <strong>'+mins+' min</strong></div>'
+                +'Available in <strong>'+mins+' min</strong></div>'
             )
-            +'<div style="padding:'+(canOut?'0':'4px')+' 16px 16px;">'
+            +'<div style="padding:0 16px 16px;margin-top:12px;">'
             +'<button onclick="signOutDirect('+idx+')" '+(canOut?'':'disabled')
-            +' style="width:100%;padding:13px;background:'+(canOut?'linear-gradient(135deg,var(--green),var(--green-d))':'#ccc')+';color:#fff;border:none;border-radius:12px;font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:2px;cursor:'+(canOut?'pointer':'not-allowed')+';display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;">'
+            +' style="width:100%;padding:13px;background:'+(canOut?'linear-gradient(135deg,var(--green),var(--green-d))':'#ccc')+';color:#fff;border:none;border-radius:12px;font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:2px;cursor:'+(canOut?'pointer':'not-allowed')+';display:flex;align-items:center;justify-content:center;gap:8px;">'
             +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'
             +' SIGN OUT'
             +'</button>'
