@@ -213,7 +213,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
       <!-- Telephone -->
       <div style="margin-bottom:12px;">
         <label style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text-light);text-transform:uppercase;display:block;margin-bottom:5px;">Telephone <span style="color:var(--red);">*</span></label>
-        <input type="tel" id="f-phone" placeholder="e.g. 076123456"
+        <input type="tel" id="f-phone" placeholder="e.g. 076123456" maxlength="9" oninput="this.value=this.value.replace(/[^0-9]/g,'').substring(0,9)"
           style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border .2s;"
           onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'">
       </div>
@@ -332,7 +332,8 @@ if (lastDay !== todayStr) {
 function getToday() { return new Date().toISOString().split('T')[0]; }
 function initials(n){ if(!n)return'?'; var p=n.trim().split(' '); return p.length>1?(p[0][0]+p[p.length-1][0]).toUpperCase():n[0].toUpperCase(); }
 function color(n){ return COLORS[(n||'A').charCodeAt(0)%COLORS.length]; }
-function fmt(ts){ return new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+function fmt(ts){ var d=new Date(ts); return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+function fmtTime(ts){ return new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
 
 // ── PARSE QR ─────────────────────────────────────────────────
 function parseQR(text) {
@@ -474,7 +475,7 @@ function submitEditForm(idx){
     var facility=document.getElementById('f-facility').value;
     var errEl=document.getElementById('form-error');
     if(!name){errEl.textContent='Full Name is required.';errEl.style.display='block';return;}
-    if(!phone){errEl.textContent='Telephone is required.';errEl.style.display='block';return;}
+    if(!phone||phone.length!==9){errEl.textContent='Telephone must be exactly 9 digits.';errEl.style.display='block';return;}
     if(!role){errEl.textContent='Role is required.';errEl.style.display='block';return;}
     if(!district){errEl.textContent='District is required.';errEl.style.display='block';return;}
     errEl.style.display='none';
@@ -499,7 +500,7 @@ function submitAddForm(){
     var facility=document.getElementById('f-facility').value;
     var errEl=document.getElementById('form-error');
     if(!name){errEl.textContent='Full Name is required.';errEl.style.display='block';return;}
-    if(!phone){errEl.textContent='Telephone is required.';errEl.style.display='block';return;}
+    if(!phone||phone.length!==9){errEl.textContent='Telephone must be exactly 9 digits.';errEl.style.display='block';return;}
     if(!role){errEl.textContent='Role is required.';errEl.style.display='block';return;}
     if(!district){errEl.textContent='District is required.';errEl.style.display='block';return;}
     errEl.style.display='none';
@@ -536,7 +537,7 @@ function renderStaffList(){
         var pillCls=dOut?'pill-full':dIn?'pill-in':'pill-pending';
         var pillTxt=dOut?'FULL DAY ✓':dIn?'SIGNED IN':'PENDING';
         var timeStr=dOut?fmt(dOut.timestamp):dIn?fmt(dIn.timestamp):'';
-        var footer=dIn?('In: '+fmt(dIn.timestamp)+(dOut?' · Out: '+fmt(dOut.timestamp):'')):'Tap to sign in / out';
+        var footer=dIn?('In: '+fmtTime(dIn.timestamp)+(dOut?' · Out: '+fmtTime(dOut.timestamp):'')):'Tap to sign in / out';
         return '<div class="staff-card '+statusClass+'" onclick="openModalByIdx('+i+')">'
             +'<div class="staff-card-top">'
             +'<div class="staff-avatar" style="background:'+c+';">'+ini+'</div>'
@@ -592,7 +593,7 @@ function openModal(data){
 
     if(dOut){
         aIn.style.display='none'; aOut.style.display='none'; aDone.style.display='block';
-        document.getElementById('done-detail').textContent='In: '+fmt(dIn.timestamp)+'  ·  Out: '+fmt(dOut.timestamp);
+        document.getElementById('done-detail').textContent='In: '+fmtTime(dIn.timestamp)+'  ·  Out: '+fmtTime(dOut.timestamp);
     } else if(dIn){
         aIn.style.display='none'; aOut.style.display='block'; aDone.style.display='none';
         var elapsed=Date.now()-new Date(dIn.timestamp).getTime();
@@ -656,6 +657,132 @@ function doSignOut(){
         submitToSheets(rec);
         showNotif('✅ '+(d.name||'')+' signed out!','success');
         renderStaffList(); renderSignInTab(); renderSignOutTab(); openModal(d);
+    });
+}
+
+// ── SIGN IN TAB ───────────────────────────────────────────────
+function renderSignInTab(){
+    var today=getToday();
+    var pending=scannedToday.filter(function(d){
+        return !signIns.find(function(s){return s.code===d.code&&s.date===today;});
+    });
+    var badge=document.getElementById('signin-badge');
+    if(badge) badge.textContent=pending.length+' PENDING';
+    var list=document.getElementById('signin-list');
+    if(!list)return;
+    if(!scannedToday.length){
+        list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text-light);font-size:13px;">No team members added yet — go to TEAM tab to add members</div>';
+        return;
+    }
+    if(!pending.length){
+        list.innerHTML='<div style="text-align:center;padding:40px 20px;"><div style="font-size:40px;margin-bottom:8px;">✅</div><div style="font-family:Bebas Neue,sans-serif;font-size:18px;color:var(--green-d);letter-spacing:1px;">ALL SIGNED IN</div></div>';
+        return;
+    }
+    list.innerHTML=pending.map(function(d){
+        var idx=scannedToday.indexOf(d);
+        var c=color(d.name), ini=initials(d.name);
+        return '<div class="staff-card" style="border:2px solid var(--border);">'
+            +'<div class="staff-card-top">'
+            +'<div class="staff-avatar" style="background:'+c+';">'+ini+'</div>'
+            +'<div class="staff-info">'
+            +'<div class="staff-name">'+(d.name||d.code)+'</div>'
+            +'<div class="staff-role">'+(d.role||'—')+'</div>'
+            +'<div class="staff-district">'+(d.district||'')+(d.chiefdom?' · '+d.chiefdom:'')+(d.facility?' · '+d.facility:'')+'</div>'
+            +'</div>'
+            +'</div>'
+            +'<div style="padding:0 16px 16px;">'
+            +'<button onclick="signInDirect('+idx+')" style="width:100%;padding:13px;background:linear-gradient(135deg,var(--gold),#e6a800);color:var(--navy-d);border:none;border-radius:12px;font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">'
+            +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>'
+            +' SIGN IN'
+            +'</button>'
+            +'</div>'
+            +'</div>';
+    }).join('');
+}
+
+function signInDirect(idx){
+    var d=scannedToday[idx]; if(!d)return;
+    var today=getToday();
+    if(signIns.find(function(s){return s.code===d.code&&s.date===today;})){showNotif((d.name||'')+ ' already signed in','error');return;}
+    var btn=document.querySelectorAll('#signin-list .staff-card')[scannedToday.filter(function(x,i){return i<=idx&&!signIns.find(function(s){return s.code===x.code&&s.date===today;});}).length-1];
+    getGPS(function(g){
+        var rec={action:'SIGN_IN',code:d.code,name:d.name||'',phone:d.phone||'',district:d.district||'',chiefdom:d.chiefdom||'',facility:d.facility||'',role:d.role||'',date:today,timestamp:new Date().toISOString(),gps:g?(g.lat+','+g.lng):'',gps_acc:g?g.acc:''};
+        signIns.push(rec);
+        localStorage.setItem('att_signins',JSON.stringify(signIns));
+        submitToSheets(rec);
+        showNotif('✅ '+(d.name||'')+' signed in!','success');
+        renderStaffList(); renderSignInTab(); renderSignOutTab();
+    });
+}
+
+// ── SIGN OUT TAB ──────────────────────────────────────────────
+function renderSignOutTab(){
+    var today=getToday();
+    var signedIn=scannedToday.filter(function(d){
+        return signIns.find(function(s){return s.code===d.code&&s.date===today;})
+            && !signOuts.find(function(s){return s.code===d.code&&s.date===today;});
+    });
+    var badge=document.getElementById('signout-badge');
+    if(badge) badge.textContent=signedIn.length+' SIGNED IN';
+    var list=document.getElementById('signout-list');
+    if(!list)return;
+    if(!scannedToday.length){
+        list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text-light);font-size:13px;">No team members added yet — go to TEAM tab to add members</div>';
+        return;
+    }
+    if(!signedIn.length){
+        list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text-light);font-size:13px;">No one has signed in yet or all have signed out</div>';
+        return;
+    }
+    list.innerHTML=signedIn.map(function(d){
+        var idx=scannedToday.indexOf(d);
+        var c=color(d.name), ini=initials(d.name);
+        var dIn=signIns.find(function(s){return s.code===d.code&&s.date===today;});
+        var elapsed=Date.now()-new Date(dIn.timestamp).getTime();
+        var remaining=SIGNOUT_DELAY_MS-elapsed;
+        var canOut=remaining<=0;
+        var mins=Math.max(0,Math.ceil(remaining/60000));
+        return '<div class="staff-card" style="border:2px solid '+(canOut?'var(--green)':'var(--border)')+';">'
+            +'<div class="staff-card-top">'
+            +'<div class="staff-avatar" style="background:'+c+';">'+ini+'</div>'
+            +'<div class="staff-info">'
+            +'<div class="staff-name">'+(d.name||d.code)+'</div>'
+            +'<div class="staff-role">'+(d.role||'—')+'</div>'
+            +'<div class="staff-district">'+(d.district||'')+(d.chiefdom?' · '+d.chiefdom:'')+'</div>'
+            +'</div>'
+            +'<div class="staff-status"><span class="status-pill pill-in">IN '+fmt(dIn.timestamp)+'</span></div>'
+            +'</div>'
+            +(canOut?''
+                :'<div style="background:var(--orange-l);border-top:1px solid #fde68a;padding:8px 16px;display:flex;align-items:center;gap:8px;font-size:11px;color:#92400e;">'
+                +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+                +'Sign out available in <strong>'+mins+' min</strong></div>'
+            )
+            +'<div style="padding:'+(canOut?'0':'4px')+' 16px 16px;">'
+            +'<button onclick="signOutDirect('+idx+')" '+(canOut?'':'disabled')
+            +' style="width:100%;padding:13px;background:'+(canOut?'linear-gradient(135deg,var(--green),var(--green-d))':'#ccc')+';color:#fff;border:none;border-radius:12px;font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:2px;cursor:'+(canOut?'pointer':'not-allowed')+';display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;">'
+            +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'
+            +' SIGN OUT'
+            +'</button>'
+            +'</div>'
+            +'</div>';
+    }).join('');
+}
+
+function signOutDirect(idx){
+    var d=scannedToday[idx]; if(!d)return;
+    var today=getToday();
+    var dIn=signIns.find(function(s){return s.code===d.code&&s.date===today;});
+    if(!dIn){showNotif((d.name||'')+' not signed in','error');return;}
+    var elapsed=Date.now()-new Date(dIn.timestamp).getTime();
+    if(elapsed<SIGNOUT_DELAY_MS){showNotif('Must wait 1 hour before signing out','error');return;}
+    if(signOuts.find(function(s){return s.code===d.code&&s.date===today;})){showNotif((d.name||'')+' already signed out','error');return;}
+    getGPS(function(g){
+        var rec={action:'SIGN_OUT',code:d.code,name:d.name||'',phone:d.phone||'',district:d.district||'',chiefdom:d.chiefdom||'',facility:d.facility||'',role:d.role||'',date:today,timestamp:new Date().toISOString(),gps:g?(g.lat+','+g.lng):'',gps_acc:g?g.acc:''};
+        signOuts.push(rec);
+        localStorage.setItem('att_signouts',JSON.stringify(signOuts));
+        submitToSheets(rec);
+        showNotif('✅ '+(d.name||'')+' signed out!','success');
+        renderStaffList(); renderSignInTab(); renderSignOutTab();
     });
 }
 
